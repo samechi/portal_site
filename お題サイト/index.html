@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大喜利お題メーカー // AUGMA_SUBSYSTEM</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* フッターボタンのSAO風スタイル */
+        .system-footer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .btn-sao-nav {
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid #00e5ff;
+            color: #00e5ff;
+            padding: 8px 25px;
+            cursor: pointer;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: 0.3s;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-sao-nav:hover {
+            background: #00e5ff;
+            color: #000;
+            box-shadow: 0 0 15px #00e5ff;
+        }
+
+        /* 既存の画面と重ならないように調整 */
+        body {
+            padding-bottom: 80px;
+            background-color: #030a10; /* OS本体と色を合わせる */
+            color: #00e5ff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="selection-screen" class="screen">
+        <header>
+            <h1 style="font-family: 'Exo 2'; letter-spacing: 5px;">大喜利お題一覧</h1>
+        </header>
+        <ul id="odai-list" class="list-container"></ul>
+    </div>
+
+    <div id="display-screen" class="screen hidden">
+        <main class="odai-focus-area">
+            <p id="odai-counter"></p>
+
+            <div class="navigation-wrapper">
+                <button id="prev-btn" class="nav-btn">◀</button>
+                
+                <div class="odai-card">
+                    <p id="current-odai"></p>
+                </div>
+                
+                <button id="next-btn" class="nav-btn">▶</button>
+            </div>
+            <button id="back-btn">一覧に戻る</button>
+        </main>
+    </div>
+
+    <footer class="system-footer">
+        <a href="../index.html" class="btn-sao-nav">RETURN TO HOME</a>
+        <button class="btn-sao-nav" onclick="location.reload()">REBOOT APP</button>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

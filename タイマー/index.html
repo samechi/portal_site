@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>背景カスタムタイマー // AUGMA_SUBSYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Exo 2', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        /* 背景画像の設定 */
+        #bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('bg.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+
+        .overlay {
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        /* 設定エリア */
+        .setup-area {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            border: none;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* タイマー表示 */
+        #timer {
+            font-size: 10rem;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            font-family: 'Share Tech Mono', monospace; /* 数字を劇中風に */
+        }
+
+        /* アプリ内ボタン */
+        .controls button, .setup-area button {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            color: #333;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+
+        .controls button:hover, .setup-area button:hover {
+            transform: scale(1.05);
+            background: #eee;
+        }
+
+        /* --- AUGMAシステム共通フッター --- */
+        .system-footer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .btn-sao-nav {
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid #00e5ff;
+            color: #00e5ff;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-sao-nav:hover {
+            background: #00e5ff;
+            color: #000;
+            box-shadow: 0 0 15px #00e5ff;
+            transform: scale(1.05);
+        }
+
+        body { padding-bottom: 80px; }
+    </style>
+</head>
+<body>
+
+    <div id="bg"></div>
+
+    <div class="overlay">
+        <div class="setup-area">
+            <input type="number" id="minutesInput" value="3" min="1" max="999">
+            <span style="font-weight: bold; letter-spacing: 2px;">MINUTES</span>
+            <button id="setBtn">SET</button>
+        </div>
+
+        <div id="timer">03:00</div>
+        
+        <div class="controls">
+            <button id="startStopBtn">START</button>
+            <button id="resetBtn">RESET</button>
+        </div>
+    </div>
+
+    <footer class="system-footer">
+        <a href="../../index.html" class="btn-sao-nav">RETURN TO HOME</a>
+        <button class="btn-sao-nav" onclick="location.reload()">REBOOT APP</button>
+    </footer>
+
+    <script>
+        let timeLeft = 180; 
+        let timerId = null;
+
+        const timerDisplay = document.getElementById('timer');
+        const minutesInput = document.getElementById('minutesInput');
+        const setBtn = document.getElementById('setBtn');
+        const startStopBtn = document.getElementById('startStopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        function updateDisplay() {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            timerDisplay.textContent = `${m}:${s}`;
+        }
+
+        setBtn.addEventListener('click', () => {
+            const mins = parseInt(minutesInput.value);
+            if (mins > 0) {
+                timeLeft = mins * 60;
+                updateDisplay();
+                stopTimer();
+            }
+        });
+
+        function startTimer() {
+            if (timerId !== null) return;
+            timerId = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateDisplay();
+                } else {
+                    clearInterval(timerId);
+                    timerId = null;
+                    startStopBtn.textContent = 'START';
+                    alert('Time up!');
+                }
+            }, 1000);
+            startStopBtn.textContent = 'STOP';
+            setBtn.disabled = true;
+        }
+
+        function stopTimer() {
+            clearInterval(timerId);
+            timerId = null;
+            startStopBtn.textContent = 'START';
+            setBtn.disabled = false;
+        }
+
+        startStopBtn.addEventListener('click', () => {
+            if (timerId === null) startTimer();
+            else stopTimer();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            stopTimer();
+            const mins = parseInt(minutesInput.value);
+            timeLeft = mins * 60;
+            updateDisplay();
+        });
+
+        updateDisplay();
+    </script>
+</body>
+</html>
